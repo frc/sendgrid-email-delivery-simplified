@@ -49,7 +49,8 @@ class Sendgrid_Settings {
       add_action( 'network_admin_menu', array( __CLASS__, 'add_network_settings_menu' ) );
     }
     // Add SendGrid Help contextual menu in the settings page
-    add_filter( 'contextual_help', array( __CLASS__, 'show_contextual_help' ), 10, 3 );
+    add_action( 'load-' . SENDGRID_PLUGIN_STATISTICS,  array( __CLASS__, 'show_contextual_help' ) );
+    add_action( 'load-' . SENDGRID_PLUGIN_SETTINGS,  array( __CLASS__, 'show_contextual_help' ) );
     // Add SendGrid javascripts in header
     add_action( 'admin_enqueue_scripts', array( __CLASS__, 'add_headers' ) );
   }
@@ -91,20 +92,15 @@ class Sendgrid_Settings {
   /**
    * Add SendGrid Help contextual menu in the settings page
    *
-   * @param   mixed   $contextual_help    contextual help
-   * @param   integer $screen_id          screen id
-   * @param   integer $screen             screen
-   *
-   * @return  string
+   * @return void
    */
-  public static function show_contextual_help( $contextual_help, $screen_id, $screen )
+  public static function show_contextual_help()
   {
-    if ( SENDGRID_PLUGIN_STATISTICS == $screen_id or SENDGRID_PLUGIN_SETTINGS == $screen_id )
-    {
-      $contextual_help = file_get_contents( dirname( __FILE__ ) . '/../view/sendgrid_contextual_help.php' );
-    }
-
-    return $contextual_help;
+    get_current_screen()->add_help_tab([
+        'title' => 'SendGrid',
+        'id' => 'sendgrid_contextual_help',
+        'content' => file_get_contents( dirname( __FILE__ ) . '/../view/sendgrid_contextual_help.php' ),
+    ]);
   }
 
   /**
